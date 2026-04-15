@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Format | Play Arena</title>
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #2d3a4b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .header-section {
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2d3a4b;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #6b7a8f;
+        }
+
+        /* Grid Layout for Cards */
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            justify-content: center;
+        }
+
+        /* The Card Button (Acts as a submit button) */
+        .format-card {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .format-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(79, 140, 255, 0.15);
+            border: 2px solid #4f8cff; /* Highlight border on hover */
+            margin: -2px; /* Offset border width to prevent layout shift */
+        }
+
+        /* Icons */
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: #f0f6ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #4f8cff;
+            transition: 0.3s;
+        }
+
+        .format-card:hover .icon-wrapper {
+            background: #4f8cff;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3a4b;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #6b7a8f;
+            line-height: 1.6;
+        }
+
+        /* Success Message */
+        .success-box {
+            background: #e6ffed;
+            color: #1a7f37;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border: 1px solid #bcebc6;
+        }
+
+        /* Hidden inputs/forms usually mess up layout, so we style the button itself */
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        
+        <div class="header-section">
+            <h1>Create New Tournament</h1>
+            <div class="subtitle">Choose a format to begin your competition</div>
+        </div>
+
+        {% if success %}
+        <div class="success-box">
+            {{ success }}
+        </div>
+        {% endif %}
+
+        <form action="/tournament/format" method="post" class="format-grid">
+            
+            <button class="format-card" name="format" value="round_robin" type="submit">
+                <div class="icon-wrapper">🔄</div>
+                <div class="card-title">Round Robin</div>
+            </button>
+
+            <button class="format-card" name="format" value="single_elimination" type="submit">
+                <div class="icon-wrapper">⚡</div>
+                <div class="card-title">Single Elimination</div>
+            </button>
+
+            <button class="format-card" name="format" value="double_elimination" type="submit">
+                <div class="icon-wrapper">🛡️</div>
+                <div class="card-title">Double Elimination</div>
+            </button>
+
+        </form>
+    </div>
+
+</body>
+</html>

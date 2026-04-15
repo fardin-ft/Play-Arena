@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard | Play Arena</title>
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+            padding: 40px 36px 32px 36px;
+            text-align: center;
+        }
+        h1 {
+            color: #2d3a4b;
+            margin-bottom: 12px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #6b7a8f;
+            margin-bottom: 32px;
+            font-size: 1.1em;
+        }
+        .action-btn {
+            display: block;
+            background: #4f8cff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 15px 0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.2);
+        }
+        .action-btn:hover {
+            background: #376fd6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79,140,255,0.3);
+        }
+        .secondary-btn {
+            background: #fff;
+            color: #4f8cff;
+            border: 2px solid #4f8cff;
+            box-shadow: none;
+        }
+        .secondary-btn:hover {
+            background: #f0f6ff;
+            color: #376fd6;
+            border-color: #376fd6;
+        }
+        .logout-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .logout-link:hover {
+            color: #666;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome Back!</h1>
+        <div class="subtitle">What would you like to do today?</div>
+        
+        <a href="/create_tournament" class="action-btn">
+            + Create New Tournament
+        </a>
+        
+        <a href="/my_tournaments" class="action-btn secondary-btn">
+            View My Tournaments
+        </a>
+
+        <a href="/" class="logout-link">Log Out</a>
+    </div>
+</body>
+</html>

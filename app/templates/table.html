@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tournament Table</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f5f7fa; }
+        h1, h2 { color: #2d3a4b; margin: 5px 0; }
+        .header-info { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #4f8cff; color: white; }
+        
+        /* Only show pointer cursor if editable */
+        .editable { background-color: #fff; }
+        .editable-active { cursor: pointer; }
+        .editable-active:hover { background-color: #eef; }
+        
+        .rank-col { font-weight: bold; background-color: #e3f2fd; color: #1565c0; width: 50px;}
+        .calculated { background-color: #f8f8f8; color: #555; font-weight: bold; }
+        
+        button { padding: 8px 14px; cursor: pointer; border: none; border-radius: 4px; color: white; font-weight: bold; transition: background 0.2s; }
+        .btn-delete { background-color: #ff4d4d; } 
+        .btn-add { background-color: #008CBA; }
+
+        .action-bar { margin-top: 25px; display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .btn-save { background-color: #28a745; font-size: 16px; padding: 12px 24px; }
+        .btn-next { background-color: #ff9800; font-size: 16px; padding: 12px 24px; }
+        .btn-danger-large { background-color: #dc3545; font-size: 14px; padding: 10px 18px; margin-left: 20px; }
+
+        input[type="number"] { width: 50px; text-align: center; }
+        input[type="text"] { width: 90%; }
+        .dashboard-link { color: #666; text-decoration: none; font-size: 0.9em; display: inline-block; }
+    </style>
+</head>
+<body>
+    
+    {% if is_editable %}
+        {% include 'navbar.html' %}
+    {% endif %}
+
+    <div class="header-info" style="margin-top: 20px;">
+        <div>
+            <h1>Tournament ID: {{ tournament_id }}</h1>
+            <h2>Category: {{ category }}</h2>
+            {% if is_editable %}
+                <a href="/my_tournaments" class="dashboard-link">&larr; Back to Dashboard</a>
+            {% else %}
+                <a href="/" class="dashboard-link">&larr; Back to Home</a>
+            {% endif %}
+        </div>
+        
+        {% if is_editable %}
+            <button id="deleteTournBtn" class="btn-danger-large">Delete Entire Tournament</button>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Team Name</th>
+                <th>Win</th>
+                <th>Lose</th>
+                <th>Draw</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>GD</th>
+                <th>Points</th>
+                {% if is_editable %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+            <tr data-team-id="{{ team.id }}">
+                <td class="rank-col">{{ loop.index }}</td>
+                
+                <td class="editable {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.name }}</td>
+                
+                <td class="editable stat-input {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.win }}</td>
+                
+                <td class="editable stat-input {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.lose }}</td>
+                
+                <td class="editable stat-input {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.draw }}</td>
+                
+                <td class="editable stat-input {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.gf }}</td>
+                
+                <td class="editable stat-input {% if is_editable %}editable-active{% endif %}" 
+                    {% if is_editable %}contenteditable="true"{% endif %}>{{ team.ga }}</td>
+                
+                <td class="calculated">{{ team.gd }}</td>
+                <td class="calculated">{{ team.pts }}</td>
+                
+                {% if is_editable %}
+                <td><button class="btn-delete" onclick="deleteTeam('{{ team.id }}')">Delete</button></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+            {% if is_editable %}
+            <tr style="background-color: #f1f8ff;">
+                <td>-</td>
+                <td><input type="text" id="newTeamName" placeholder="New Team Name"></td>
+                <td><input type="number" id="newTeamWin" value="0" min="0"></td>
+                <td><input type="number" id="newTeamLose" value="0" min="0"></td>
+                <td><input type="number" id="newTeamDraw" value="0" min="0"></td>
+                <td><input type="number" id="newTeamGF" value="0" min="0"></td>
+                <td><input type="number" id="newTeamGA" value="0" min="0"></td>
+                <td>-</td>
+                <td>-</td>
+                <td><button id="addTeamBtn" class="btn-add">Add</button></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if is_editable %}
+    <div class="action-bar">
+        <button id="saveChangesBtn" class="btn-save">Save Changes</button>
+        <button id="nextRoundBtn" class="btn-next">Next Round >></button>
+    </div>
+    {% endif %}
+
+    <script>
+        // Define is_editable from backend to use in JS
+        const IS_EDITABLE = {{ 'true' if is_editable else 'false' }};
+
+        if (IS_EDITABLE) {
+            // 1. Auto-Calculate (Visual Only)
+            document.querySelectorAll('.stat-input').forEach(cell => {
+                cell.addEventListener('input', function() {
+                    const row = this.parentElement;
+                    const cells = row.querySelectorAll('td');
+                    // 0:Rank, 1:Name, 2:Win, 3:Lose, 4:Draw, 5:GF, 6:GA, 7:GD, 8:Points
+                    const win = parseInt(cells[2].innerText) || 0;
+                    const draw = parseInt(cells[4].innerText) || 0;
+                    const gf = parseInt(cells[5].innerText) || 0;
+                    const ga = parseInt(cells[6].innerText) || 0;
+
+                    cells[7].innerText = gf - ga; 
+                    cells[8].innerText = (win * 3) + (draw * 1);
+                });
+            });
+
+            // 2. Save Changes
+            document.getElementById('saveChangesBtn').addEventListener('click', function() {
+                const tableRows = document.querySelectorAll('tbody tr[data-team-id]');
+                const teamData = [];
+                let hasError = false;
+
+                tableRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const win = parseInt(cells[2].innerText) || 0;
+                    const lose = parseInt(cells[3].innerText) || 0;
+                    const draw = parseInt(cells[4].innerText) || 0;
+                    const gf = parseInt(cells[5].innerText) || 0;
+                    const ga = parseInt(cells[6].innerText) || 0;
+
+                    if (win < 0 || lose < 0 || draw < 0 || gf < 0 || ga < 0) hasError = true;
+
+                    teamData.push({
+                        teamId: row.dataset.teamId,
+                        name: cells[1].innerText.trim(),
+                        win: win, lose: lose, draw: draw, gf: gf, ga: ga
+                    });
+                });
+
+                if (hasError) return alert("Stats cannot be negative!");
+
+                fetch('/update_teams', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(teamData) })
+                .then(res => { if(res.ok) location.reload(); else alert('Failed to save.'); });
+            });
+
+            // 3. Add Team
+            document.getElementById('addTeamBtn').addEventListener('click', function() {
+                const name = document.getElementById('newTeamName').value;
+                const win = parseInt(document.getElementById('newTeamWin').value) || 0;
+                const lose = parseInt(document.getElementById('newTeamLose').value) || 0;
+                const draw = parseInt(document.getElementById('newTeamDraw').value) || 0;
+                const gf = parseInt(document.getElementById('newTeamGF').value) || 0;
+                const ga = parseInt(document.getElementById('newTeamGA').value) || 0;
+
+                if(!name) return alert("Enter team name");
+                if(win < 0 || lose < 0 || draw < 0 || gf < 0 || ga < 0) return alert("No negative numbers.");
+
+                const data = {
+                    tournament_id: "{{ tournament_id }}",
+                    name: name, win: win, lose: lose, draw: draw, gf: gf, ga: ga
+                };
+                fetch('/add_team_table', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+                .then(res => { if(res.ok) location.reload(); else res.json().then(d => alert(d.message)); });
+            });
+
+            // 4. Delete Team
+            window.deleteTeam = function(id) {
+                if(confirm("Delete this team?")) {
+                    fetch('/delete_team', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ team_id: id }) })
+                    .then(res => { if(res.ok) location.reload(); });
+                }
+            };
+
+            // 5. Next Round
+            document.getElementById('nextRoundBtn').addEventListener('click', function() {
+                const count = prompt("How many top teams advance?");
+                if (!count) return;
+                fetch('/promote_next_round', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tournament_id: "{{ tournament_id }}", promote_count: parseInt(count) })
+                })
+                .then(res => res.json())
+                .then(data => { if (data.next_url) window.location.href = data.next_url; });
+            });
+
+            // 6. Delete Tournament
+            document.getElementById('deleteTournBtn').addEventListener('click', function() {
+                if(confirm("Delete ENTIRE tournament?")) {
+                    fetch('/delete_tournament', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tournament_id: "{{ tournament_id }}" })
+                    })
+                    .then(res => res.json())
+                    .then(data => { if (data.redirect_url) window.location.href = data.redirect_url; });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Account | Play Arena</title>
+    <style>
+        :root {
+            --primary: #4f8cff;
+            --primary-dark: #376fd6;
+            --bg-gradient: linear-gradient(135deg, #4f8cff 0%, #2b55cc 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .auth-container {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Tabs */
+        .auth-tabs { display: flex; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; }
+        .tab-btn {
+            flex: 1; padding: 15px; border: none; background: none;
+            font-size: 1.1rem; font-weight: 600; color: #aaa; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: var(--primary);
+        }
+
+        /* Forms */
+        .form-section { display: none; animation: fadeIn 0.4s ease; }
+        .form-section.active { display: block; }
+        h2 { margin-top: 0; color: #333; font-size: 1.8rem; margin-bottom: 10px; }
+        .sub-text { color: #888; margin-bottom: 25px; font-size: 0.95rem; }
+
+        /* Inputs */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group input {
+            width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box;
+        }
+        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.1); }
+        .input-group label {
+            position: absolute; left: 15px; top: 15px; color: #aaa; pointer-events: none; transition: 0.3s; font-size: 1rem; background: white; padding: 0 5px;
+        }
+        .input-group input:focus ~ label, .input-group input:not(:placeholder-shown) ~ label {
+            top: -10px; font-size: 0.85rem; color: var(--primary); font-weight: 600;
+        }
+
+        /* Buttons */
+        .submit-btn {
+            width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .submit-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .forgot-link { display: block; text-align: right; margin-top: 10px; color: #888; font-size: 0.9rem; text-decoration: none; cursor: pointer; }
+        .back-home { position: absolute; top: 20px; left: 20px; color: white; text-decoration: none; font-weight: 600; opacity: 0.8; transition: 0.3s; }
+        
+        /* Error Box */
+        .error-msg { background: #ffebee; color: #d32f2f; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; text-align: center; border: 1px solid #ffcdd2; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+        }
+        .modal-card {
+            background: white; width: 90%; max-width: 400px; padding: 30px;
+            border-radius: 15px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .user-id-box {
+            background: #f1f8ff; border: 2px dashed #4f8cff; color: #2d3a4b;
+            font-size: 2rem; font-weight: 800; padding: 15px; margin: 20px 0;
+            border-radius: 10px; letter-spacing: 2px;
+        }
+        .modal-warning { color: #d32f2f; font-size: 0.9rem; margin-bottom: 20px; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <a href="/" class="back-home">&larr; Back to Home</a>
+
+    <div class="modal-overlay" id="idModal">
+        <div class="modal-card">
+            <span class="modal-icon">🎉</span>
+            <h2 style="font-size:1.5rem; margin-bottom:10px;">Account Created!</h2>
+            <p style="color:#666;">This is your unique User ID.</p>
+            
+            <div class="user-id-box" id="displayUserId">---</div>
+            
+            <p class="modal-warning">⚠ Please write this down! You will need this ID to recover your password if you forget it.</p>
+            
+            <button class="submit-btn" onclick="finishSignup()">I have saved my ID</button>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        
+        {% if error %}
+        <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+            <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div id="login-form" class="form-section active">
+            <h2>Welcome Back</h2>
+            <p class="sub-text">Enter your credentials to access your tournaments.</p>
+            <form action="/sign/login" method="post">
+                <div class="input-group">
+                    <input type="email" name="email" id="l-email" placeholder=" " required>
+                    <label for="l-email">Email Address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" id="l-pass" placeholder=" " required>
+                    <label for="l-pass">Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                <a class="forgot-link" onclick="switchTab('forgot')">Forgot Password?</a>
+            </form>
+        </div>
+
+        <div id="signup-form" class="form-section">
+            <h2>Create Account</h2>
+            <p class="sub-text">Start organizing your own tournaments today.</p>
+            <form id="signupFormReal">
+                <div class="input-group">
+                    <input type="email" name="email" id="s-email" placeholder=" " required>
+                    <label for="s-email">Email Address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" id="s-pass" placeholder=" " required>
+                    <label for="s-pass">Create Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+        </div>
+
+        <div id="forgot-form" class="form-section">
+            <h2>Reset Password</h2>
+            <p class="sub-text">Enter your details to reset your access.</p>
+            <form action="/sign/forgot" method="post">
+                <div class="input-group">
+                    <input type="number" name="id" id="f-id" placeholder=" " required>
+                    <label for="f-id">User ID (Number)</label>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" id="f-email" placeholder=" " required>
+                    <label for="f-email">Email Address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="new_password" id="f-pass" placeholder=" " required>
+                    <label for="f-pass">New Password</label>
+                </div>
+                <button type="submit" class="submit-btn">Change Password</button>
+                <a class="forgot-link" style="text-align: center; margin-top: 15px;" onclick="switchTab('login')">Back to Login</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            if (tabName === 'login') {
+                document.getElementById('login-form').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else if (tabName === 'signup') {
+                document.getElementById('signup-form').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            } else if (tabName === 'forgot') {
+                document.getElementById('forgot-form').classList.add('active');
+            }
+        }
+
+        // --- SIGNUP HANDLER ---
+        document.getElementById('signupFormReal').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop normal reload
+
+            const formData = new FormData(this);
+
+            fetch('/sign/signup', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.user_id) {
+                    // Success! Show Modal
+                    document.getElementById('displayUserId').innerText = data.user_id;
+                    document.getElementById('idModal').style.display = 'flex';
+                } else {
+                    alert("Error: " + (data.message || "Signup failed"));
+                }
+            })
+            .catch(error => alert("Server error occurred."));
+        });
+
+        function finishSignup() {
+            // Send them to login screen so they can enter email/pass and get the cookie
+            window.location.href = "/sign"; 
+            // Or toggle the tab automatically:
+            // switchTab('login');
+            // document.getElementById('idModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
