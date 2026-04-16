@@ -1,0 +1,80 @@
+<style>
+    /* Navbar Styles */
+    .navbar {
+        background: linear-gradient(135deg, #4f8cff 0%, #376fd6 100%);
+        padding: 0 30px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(79, 140, 255, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-brand {
+        font-size: 1.5em;
+        font-weight: 800;
+        color: white;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .nav-brand span {
+        background: rgba(255,255,255,0.2);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8em;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95em;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .nav-btn-highlight {
+        background: white;
+        color: #376fd6 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-btn-highlight:hover {
+        background: #f0f6ff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+</style>
+
+<nav class="navbar">
+    <a href="/my_tournaments" class="nav-brand">
+        Play Arena
+    </a>
+
+    <div class="nav-links">
+        <a href="/my_tournaments" class="nav-link">Dashboard</a>
+        <a href="/format" class="nav-link">+ New Tournament</a>
+        
+        <a href="/logout" class="nav-link nav-btn-highlight">Log Out</a>
+    </div>
+</nav>

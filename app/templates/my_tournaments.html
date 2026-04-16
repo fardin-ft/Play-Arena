@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Tournaments | Play Arena</title>
+    <style>
+        body { background: #f5f7fa; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 30px; }
+        h1 { color: #2d3a4b; text-align: center; margin-bottom: 30px; }
+        
+        .tournament-list { list-style: none; padding: 0; margin: 0; }
+        .tournament-item { 
+            background: #fff; 
+            border: 1px solid #e1e4e8; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tournament-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: #4f8cff;
+        }
+        
+        .t-info { display: flex; flex-direction: column; }
+        .t-name { font-size: 1.2em; font-weight: bold; color: #2d3a4b; text-decoration: none; }
+        .t-meta { color: #6b7a8f; font-size: 0.9em; margin-top: 4px; }
+        
+        .btn-view { 
+            background-color: #4f8cff; 
+            color: white; 
+            text-decoration: none; 
+            padding: 8px 16px; 
+            border-radius: 5px; 
+            font-weight: 600; 
+            font-size: 0.9em;
+        }
+        .btn-view:hover { background-color: #376fd6; }
+        
+        .empty-state { text-align: center; color: #999; margin: 40px 0; }
+        .create-link { display: block; text-align: center; margin-top: 20px; color: #4f8cff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>My Tournaments</h1>
+        
+        {% if tournaments %}
+            <ul class="tournament-list">
+                {% for t in tournaments %}
+                <li class="tournament-item">
+                    <div class="t-info">
+                        <a href="/tournament/{{ t.id }}/table" class="t-name">{{ t.category|replace('_', ' ')|title }}</a>
+                        <span class="t-meta">ID: {{ t.id }} • {{ t.teams }} Teams</span>
+                    </div>
+                    <a href="/tournament/{{ t.id }}/table" class="btn-view">View Table</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>You haven't created any tournaments yet.</p>
+            </div>
+        {% endif %}
+
+        <a href="/format" class="create-link">+ Create New Tournament</a>
+    </div>
+</body>
+</html>
